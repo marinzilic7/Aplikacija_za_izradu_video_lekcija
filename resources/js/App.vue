@@ -3,58 +3,42 @@ import { RouterLink, RouterView } from "vue-router";
 </script>
 
 <template>
-    <v-app>
-        <v-navigation-drawer v-model="sidebar" app>
-            <v-list>
-                <v-list-tile
-                    v-for="item in menuItems"
-                    :key="item.title"
-                    :to="item.path"
-                >
-                    <v-list-tile-action>
-                        <v-icon>{{ item.icon }}</v-icon>
-                    </v-list-tile-action>
-                    <v-list-tile-content>{{ item.title }}</v-list-tile-content>
-                </v-list-tile>
-            </v-list>
-        </v-navigation-drawer>
+    <!-- Navigation bar -->
 
-        <v-toolbar app>
-            <span class="hidden-sm-and-up">
-                <v-toolbar-side-icon @click="sidebar = !sidebar">
-                </v-toolbar-side-icon>
-            </span>
-            <v-toolbar-title>
-                <router-link to="/" tag="span" style="cursor: pointer">
-                    {{ appTitle }}
-                </router-link>
-            </v-toolbar-title>
-            <v-spacer></v-spacer>
-            <v-toolbar-items class="hidden-xs-only">
-                <v-btn
-                    flat
-                    v-for="item in menuItems"
-                    :key="item.title"
-                    :to="item.path"
-                >
-                    <v-icon left dark>{{ item.icon }}</v-icon>
-                    {{ item.title }}
-                </v-btn>
-            </v-toolbar-items>
-        </v-toolbar>
-
-        <v-content>
-            <router-view></router-view>
-        </v-content>
-    </v-app>
-
+    <nav class="navbar navbar-expand-lg bg-body-tertiary shadow-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand text-decoration-none" href="#">VideoLesson</a>
+            <button
+                class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent"
+                aria-expanded="false"
+                aria-label="Toggle navigation"
+            >
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <li><RouterLink class="text-decoration-none text-dark" to="/">Home</RouterLink></li>
+                    </li>
+                </ul>
+                <ul class="navbar-nav ">
+                    <li class="nav-item">
+                        <RouterLink class="pe-3 text-decoration-none text-dark" to="/login">Prijava</RouterLink>
+                    </li>
+                    <li class="nav-item">
+                        <RouterLink class="text-decoration-none text-dark" to="/register">Registracija</RouterLink>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
     <ul>
-        <li>
-            <RouterLink to="/login">Prijava</RouterLink>
-        </li>
-        <li>
-            <RouterLink to="/register">Registracija</RouterLink>
-        </li>
+
+
     </ul>
 
     <RouterView />
