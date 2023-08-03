@@ -25,13 +25,38 @@ import { RouterLink, RouterView } from "vue-router";
                         <li><RouterLink class="text-decoration-none text-dark" to="/">Home</RouterLink></li>
                     </li>
                 </ul>
-                <ul class="navbar-nav ">
+                <ul class="navbar-nav "  v-if="!isLoggedIn">
                     <li class="nav-item">
                         <RouterLink class="pe-3 text-decoration-none text-dark" to="/login">Prijava</RouterLink>
                     </li>
                     <li class="nav-item">
                         <RouterLink class="text-decoration-none text-dark" to="/register">Registracija</RouterLink>
                     </li>
+                </ul>
+                <ul v-else class="navbar-nav">
+                    <li >
+                            <div class="dropdown">
+                                <button
+                                    class="btn dropdown-toggle"
+                                    type="button"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false"
+                                >
+                                    {{ loggedInUser.ime }}
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <button
+                                            @click="logOut"
+                                            class="dropdown-item"
+                                            type="button"
+                                        >
+                                            Logout
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
                 </ul>
             </div>
         </div>
@@ -45,18 +70,53 @@ import { RouterLink, RouterView } from "vue-router";
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 export default {
-    name: "App",
+
     data() {
         return {
-            appTitle: "VideoLessonApp",
-            sidebar: false,
-            menuItems: [
-                { title: "Home", path: "/home", icon: "home" },
-                { title: "Register", path: "/register", icon: "face" },
-                { title: "Login", path: "/login", icon: "lock_open" },
-            ],
+            isLoggedIn: false,
+
+
         };
+    },
+    computed: {
+        ...mapGetters(["loggedInUser"]),
+        isLoggedIn() {
+            return this.loggedInUser !== null;
+        },
+    },
+    created() {
+        this.checkLoginStatus();
+    },
+    methods: {
+        checkLoginStatus() {
+            axios
+                .get("/isLogged")
+                .then((response) => {
+                    this.loggedInUser = response.data;
+
+                    this.isLoggedIn = true;
+                    console.log(this.isLoggedIn);
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        },
+        logOut() {
+            axios
+                .post("/logoutUser")
+                .then((response) => {
+                    this.isLoggedIn = false;
+                    this.loggedInUser = null;
+                    this.$store.dispatch("logout");
+                    this.$router.push("/login");
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        },
+
     },
 };
 </script>

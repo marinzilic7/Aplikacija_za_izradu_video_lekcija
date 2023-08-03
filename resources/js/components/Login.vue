@@ -3,7 +3,7 @@
         <div class="row d-flex flex-column align-items-center mt-5">
             <form
                 class="col-12 col-md-9 col-lg-6 col-sm-12 border p-5 shadow-lg"
-                @submit.prevent="registerUser"
+                @submit.prevent="loginUser"
                 method="POST"
             >
                 <input type="hidden" v-model="this.POST" />
@@ -46,15 +46,62 @@ export default {
     data() {
         return {
             form: {
-                ime: "",
-                prezime: "",
                 email: "",
                 password: "",
-                confPassword: "",
             },
             POST: "",
             csrfToken: "",
         };
+    },
+    methods: {
+        fetchCsrfToken() {
+            axios
+                .get("/sanctum/csrf-cookie")
+                .then((response) => {
+                    this.csrfToken = response.data.csrf_token;
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+        },
+        loginUser() {
+            const Data = {
+                email: this.form.email,
+                password: this.form.password,
+            };
+            axios.defaults.headers.common["X-CSRF-TOKEN"] = this.csrfToken;
+            axios
+                .post("/loginUser", Data)
+                .then((response) => {
+                    this.logMessage = response.data.poruka;
+
+                    this.successRegg = true;
+                    if (this.logMessage == "Uspješna prijava") {
+                        this.$store.dispatch(
+                            "setLoginMessage",
+                            this.logMessage
+                        );
+                        this.$store.commit(
+                            "setLoggedInUser",
+                            response.data.user
+                        );
+                        this.successRegg = true;
+                        this.falseReg = false;
+                        this.$router.push("/");
+                    } else {
+                        this.falseReg = true;
+                        this.successRegg = false;
+                    }
+                })
+                .catch((error) => {
+                    console.log("Error:", error);
+                    if (error.response && error.response.status === 422) {
+                        this.errors = error.response.data.errors;
+                    } else {
+                        console.log(error);
+                    }
+                });
+        },
     },
 };
 </script>
