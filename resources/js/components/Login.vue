@@ -16,9 +16,11 @@
                         id="uname"
                         placeholder="Unesite vas email"
                         name="uname"
-                        required
                         v-model="form.email"
                     />
+                    <p v-if="errors.email" class="text-danger">
+                        {{ errors.email[0] }}
+                    </p>
                 </div>
                 <div class="mb-3">
                     <label for="pwd" class="form-label">Lozinka:</label>
@@ -28,14 +30,17 @@
                         id="pwd"
                         placeholder="Unesite vasu lozinku"
                         name="pswd"
-                        required
                         v-model="form.password"
                     />
+                    <p v-if="errors.password" class="text-danger">
+                        {{ errors.password[0] }}
+                    </p>
                 </div>
 
                 <button type="submit" class="btn btn-primary w-100">
                     Prijava
                 </button>
+                <div v-if="failedReg" class="alert alert-danger mt-3">Pogresan email ili lozinka</div>
             </form>
         </div>
     </div>
@@ -49,8 +54,10 @@ export default {
                 email: "",
                 password: "",
             },
+            errors: {},
             POST: "",
             csrfToken: "",
+            failedReg:false,
         };
     },
     methods: {
@@ -89,7 +96,7 @@ export default {
                         this.falseReg = false;
                         this.$router.push("/");
                     } else {
-                        this.falseReg = true;
+                        this.failedReg = true;
                         this.successRegg = false;
                     }
                 })

@@ -20,10 +20,15 @@ class UserController extends Controller
             'confPassword' => ''
         ]);
 
+        $existMail = User::where('email', $data['email'])->first();
 
+        if ($existMail) {
+            return response()->json(['existMail' => 'Postoji korisnik s tim emailom'], 422);
+        }
 
         $data['password'] = Hash::make($data['password']);
         $data['confPassword'] = Hash::make($data['confPassword']);
+
         $user = new User();
         $user->create($data);
 
@@ -64,7 +69,8 @@ class UserController extends Controller
         }
     }
 
-    public function logoutUser(){
+    public function logoutUser()
+    {
         Auth::logout();
         return response()->json(['redirect' => '/login']);
     }

@@ -120,7 +120,17 @@
                 <button type="submit" class="btn btn-primary w-100">
                     Registriraj
                 </button>
-                <div v-if="successReg" class="alert alert-success mt-4">Uspjesna registracija! <span><a href="/login" class="text-decoration-none">Prijavite se</a></span></div>
+                <div v-if="successReg" class="alert alert-success mt-4">
+                    Uspjesna registracija!
+                    <span
+                        ><a href="/login" class="text-decoration-none"
+                            >Prijavite se</a
+                        ></span
+                    >
+                </div>
+                <p v-if="failedReg" class="alert alert-warning mt-3">
+                    Postoji korisnik s tim mailom
+                </p>
             </form>
         </div>
     </div>
@@ -144,7 +154,9 @@ export default {
             checkPassword: false,
             checkPasswordConfiguration: false,
             repeatPw: false,
-            successReg:false,
+            successReg: false,
+            failedReg: false,
+            existMail: "",
         };
     },
     mounted() {
@@ -209,12 +221,15 @@ export default {
                 axios
                     .post("/registerUser", Data)
                     .then((response) => {
+
                         this.poruka = response.data.poruka;
-                        this.successReg = true
+                        this.successReg = true;
                     })
                     .catch((error) => {
                         if (error.response && error.response.status === 422) {
                             this.errors = error.response.data.errors;
+
+                            this.failedReg = true;
                         } else {
                             console.log(error);
                         }
