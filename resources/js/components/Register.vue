@@ -20,15 +20,15 @@
                         required
                         v-model="form.ime"
                     />
-                    <div class="invalid-feedback">
+                    <div class="invalid-feedback ">
                         <span v-if="!form.ime">Ovo polje je obavezno.</span>
                     </div>
-                    <div class="invalid-feedback">
+                    <div class="invalid-feedback ">
                         Ime mora biti duza od 2 slova.
                     </div>
                 </div>
-                <div class="mb-3 mt-3">
-                    <label for="ulastname" class="form-label mt-3"
+                <div class="mb-3 mt-4">
+                    <label for="ulastname" class="form-label x"
                         >Prezime:</label
                     >
                     <input
@@ -44,12 +44,12 @@
                         required
                         v-model="form.prezime"
                     />
-                    <div class="invalid-feedback">
+                    <div class="invalid-feedback ">
                         <span v-if="!form.prezime">Ovo polje je obavezno.</span>
                     </div>
                 </div>
                 <div class="mb-3 mt-3">
-                    <label for="uname" class="form-label">Email:</label>
+                    <label for="uname" class="form-label ">Email:</label>
                     <input
                         type="email"
                         :class="
@@ -98,11 +98,7 @@
                     >
                     <input
                         type="password"
-                        :class="
-                            checkPasswordConfiguration
-                                ? 'form-control'
-                                : 'form-control is-invalid'
-                        "
+                        :class="getInputClasses()"
                         id="uname"
                         placeholder="Ponovite vasu lozinku"
                         name="uname"
@@ -111,9 +107,11 @@
                         @input="checkPasswordConf"
                     />
 
-                    <div class="invalid-feedback" v-show="repeatPw">Ovo polje je obavezno.</div>
-                    <div class="invalid-feedback">
-                        Lozinke se moraju podudarati
+                    <div v-if="!form.confPassword" class="invalid-feedback">
+                        Ovo polje je obavezno.
+                    </div>
+                    <div v-else class="invalid-feedback">
+                        Lozinke se moraju podudarati.
                     </div>
                 </div>
 
@@ -146,7 +144,6 @@ export default {
         this.checkName();
         this.checkPasswordInput();
         this.checkPasswordConf();
-        this.checkRepeatLenght();
     },
     methods: {
         checkName() {
@@ -166,19 +163,13 @@ export default {
         },
 
         checkPasswordConf() {
-            if (this.form.confPassword != this.form.password) {
-                this.checkPasswordConfiguration = false;
-            } else {
-                this.checkPasswordConfiguration = true;
-            }
+            this.checkPasswordConfiguration =
+                this.form.password === this.form.confPassword;
         },
-
-        checkRepeatLenght() {
-            if (this.form.confPassword.length == 0) {
-                this.repeatPw = false;
-            } else {
-                this.repeatPw = true;
-            }
+        getInputClasses() {
+            return this.form.confPassword && this.checkPasswordConfiguration
+                ? "form-control"
+                : "form-control is-invalid";
         },
     },
 };
