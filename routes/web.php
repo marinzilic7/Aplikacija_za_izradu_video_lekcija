@@ -1,12 +1,20 @@
 <?php
 
+use App\Http\Controllers\CourseController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
+
+/* Registracija i prijava */
 
 Route::post('/registerUser',[UserController::class,'registerUser']);
 Route::post('/loginUser',[UserController::class,'loginUser']);
 Route::get('/isLogged',[UserController::class,'isLogged']);
 Route::post('/logoutUser',[UserController::class,'logoutUser']);
+
+/* Kolegij */
+
+Route::post('/dodajKolegij',[CourseController::class,'dodajKolegij']);
+Route::get('/getKolegij',[CourseController::class,'getKolegij']);
 
 Route::get('/{any}', function () {
     return view('welcome');
