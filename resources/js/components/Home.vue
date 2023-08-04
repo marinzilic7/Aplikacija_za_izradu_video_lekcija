@@ -125,7 +125,11 @@
                                         id="exampleInputEmail1"
                                         aria-describedby="emailHelp"
                                         v-model="lesson.naslov"
+                                        required
                                     />
+                                    <p v-if="errors.naslov" class="text-danger">
+                                        {{ errors.naslov[0] }}
+                                    </p>
                                     <div class="mb-3">
                                         <label
                                             for="exampleInputPassword1"
@@ -139,7 +143,14 @@
                                                 id="floatingTextarea2"
                                                 style="height: 100px"
                                                 v-model="lesson.opis"
+                                                required
                                             ></textarea>
+                                            <p
+                                                v-if="errors.opis"
+                                                class="text-danger"
+                                            >
+                                                {{ errors.opis[0] }}
+                                            </p>
                                         </div>
                                         <div class="mt-3">
                                             <label
@@ -151,20 +162,27 @@
                                                 class="form-control"
                                                 type="file"
                                                 id="formFile"
+                                                required
                                                 @change="videoChange"
                                             />
+                                            <p
+                                                v-if="errors.video"
+                                                class="text-danger"
+                                            >
+                                                {{ errors.video[0] }}
+                                            </p>
                                         </div>
                                         <div class="input-group mt-3">
                                             <select
                                                 class="form-select"
                                                 id="inputGroupSelect02"
                                                 v-model="lesson.course_id"
+                                                required
                                             >
                                                 <option selected>
                                                     Odaberi kolegij
                                                 </option>
                                                 <option
-
                                                     v-for="kolegij in kolegiji"
                                                     :value="kolegij.id"
                                                     :key="kolegij.id"
@@ -177,6 +195,12 @@
                                                 for="inputGroupSelect02"
                                                 >Kolegij</label
                                             >
+                                            <p
+                                                v-if="errors.course_id"
+                                                class="text-danger"
+                                            >
+                                                {{ errors.course_id[0] }}
+                                            </p>
                                         </div>
                                     </div>
                                 </div>
@@ -190,6 +214,27 @@
                             </form>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+        <div
+            class="d-flex flex-column align-items-center justify-content-center"
+        >
+            <div class="card mt-5 col-lg-8" v-for="lekcija in lekcije">
+                <video class="card-img-top" controls>
+                    <source :src="'/videos/' + lekcija.video" />
+                    Your browser does not support the video tag.
+                </video>
+                <div class="card-body">
+                    <h5 class="card-title">{{ lekcija.naslov }}</h5>
+                    <p class="card-text">
+                        {{ lekcija.opis }}
+                    </p>
+                    <p class="card-text">
+                        <small class="text-muted"
+                            >Last updated 3 mins ago</small
+                        >
+                    </p>
                 </div>
             </div>
         </div>
@@ -213,13 +258,16 @@ export default {
             lesson: {
                 naslov: "",
                 opis: "",
-                video: "",
+                video: null,
                 course_id: "",
             },
+            lekcije: [],
+            errors: {},
         };
     },
     created() {
         this.getKolegij2();
+        this.getLekcije();
     },
     mounted() {
         this.fetchCsrfToken();
@@ -287,24 +335,37 @@ export default {
         },
 
         dodajVideo() {
-
-            let lesson = new FormData();
-            lesson.append("naslov",this.lesson.naslov);
-            lesson.append("opis",this.lesson.opis);
-            lesson.append("video",this.lesson.video);
-            lesson.append("course_id",this.lesson.course_id);
-           /*  const Video = {
+            let lessonFormData = new FormData();
+            lessonFormData.append("naslov", this.lesson.naslov);
+            lessonFormData.append("opis", this.lesson.opis);
+            lessonFormData.append("video", this.lesson.video);
+            lessonFormData.append("course_id", this.lesson.course_id);
+            /*  const Video = {
                 naziv: this.lesson.naziv,
                 opis: this.lesson.opis,
                 video: this.lesson.video,
                 course_id: this.lesson.course_id,
             }; */
+
             axios.defaults.headers.common["X-CSRF-TOKEN"] = this.csrfToken;
 
             axios
-                .post("/dodajVideo", lesson)
+                .post("/dodajVideo", lessonFormData)
                 .then((response) => {
                     this.poruka = response.data.poruka;
+
+                    this.getLekcije();
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        },
+
+        getLekcije() {
+            axios
+                .get("/getLekcije")
+                .then((response) => {
+                    this.lekcije = response.data;
                 })
                 .catch((error) => {
                     console.log(error);

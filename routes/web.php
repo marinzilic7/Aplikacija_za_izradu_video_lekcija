@@ -24,6 +24,7 @@ Route::get('/getNumberKolegij',[CourseController::class,'getNumberKolegij']);
 
 
 Route::post('/dodajVideo',[LessonController::class,'dodajVideo']);
+Route::get('/getLekcije',[LessonController::class,'getLekcije']);
 
 
 Route::get('/{any}', function () {

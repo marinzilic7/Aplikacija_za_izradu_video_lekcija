@@ -7,14 +7,20 @@ use Illuminate\Http\Request;
 
 class LessonController extends Controller
 {
-    public function dodajVideo(Request $request){
+    public function dodajVideo(Request $request)
+    {
 
         $data = $request->validate([
             'naslov' => 'required',
-            'opis' => '',
-            'video' => '',
-            'course_id' => ''
+            'opis' => 'required',
+            'video' => 'required',
+            'course_id' => 'required'
 
+        ],[
+            'naslov.required' => 'Obavezno',
+            'opis.required' => 'Obavezno',
+            'video.required' => 'Obavezno',
+            'course_id.required' => 'Obavezno',
         ]);
 
         $video = new Lesson();
@@ -31,7 +37,12 @@ class LessonController extends Controller
         $video->create($data);
         $video->save();
 
-        return response()->json(['message' => 'Video lekcija uspjesno dodana!'], 201);
+        return response()->json(['message' => 'Video lekcija uspjesno dodana!']);
+    }
 
+    public function getLekcije()
+    {
+        $lekcije = Lesson::get();
+        return response()->json($lekcije);
     }
 }
