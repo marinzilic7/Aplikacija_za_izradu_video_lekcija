@@ -102,24 +102,35 @@
                         <div
                             class="accordion-body d-flex flex-column align-items-center"
                         >
-                            <form class="border p-5 shadow-lg col-lg-9">
+                            <form
+                                class="border p-5 shadow-lg col-lg-9"
+                                @submit.prevent="dodajVideo"
+                                method="POST"
+                            >
+                                <input type="hidden" v-model="this.POST" />
+                                <input
+                                    type="hidden"
+                                    name=""
+                                    v-model="this.csrfToken"
+                                />
                                 <div class="mb-3">
                                     <label
                                         for="exampleInputEmail1"
                                         class="form-label"
-                                        >Naslov lekcije</label
+                                        >Naslov video lekcije</label
                                     >
                                     <input
-                                        type="email"
+                                        type="text"
                                         class="form-control"
                                         id="exampleInputEmail1"
                                         aria-describedby="emailHelp"
+                                        v-model="lesson.naslov"
                                     />
                                     <div class="mb-3">
                                         <label
                                             for="exampleInputPassword1"
                                             class="form-label"
-                                            >Opis kolegija</label
+                                            >Opis video lekcije</label
                                         >
                                         <div class="form-floating">
                                             <textarea
@@ -127,32 +138,39 @@
                                                 placeholder="Leave a comment here"
                                                 id="floatingTextarea2"
                                                 style="height: 100px"
-                                                v-model="course.opis"
+                                                v-model="lesson.opis"
                                             ></textarea>
                                         </div>
                                         <div class="mt-3">
                                             <label
                                                 for="formFile"
                                                 class="form-label"
-                                                >Dodaj video</label
+                                                >Dodaj video lekciju</label
                                             >
                                             <input
                                                 class="form-control"
                                                 type="file"
                                                 id="formFile"
+                                                @change="videoChange"
                                             />
                                         </div>
                                         <div class="input-group mt-3">
                                             <select
                                                 class="form-select"
                                                 id="inputGroupSelect02"
+                                                v-model="lesson.course_id"
                                             >
                                                 <option selected>
                                                     Odaberi kolegij
                                                 </option>
-                                                <option value="1">One</option>
-                                                <option value="2">Two</option>
-                                                <option value="3">Three</option>
+                                                <option
+
+                                                    v-for="kolegij in kolegiji"
+                                                    :value="kolegij.id"
+                                                    :key="kolegij.id"
+                                                >
+                                                    {{ kolegij.naziv }}
+                                                </option>
                                             </select>
                                             <label
                                                 class="input-group-text"
@@ -176,8 +194,6 @@
             </div>
         </div>
     </div>
-
-
 </template>
 
 <script>
@@ -189,13 +205,22 @@ export default {
                 naziv: "",
                 opis: "",
             },
+            kolegiji: [],
             POST: "",
             csrfToken: "",
             successKolegij: false,
 
+            lesson: {
+                naslov: "",
+                opis: "",
+                video: "",
+                course_id: "",
+            },
         };
     },
-
+    created() {
+        this.getKolegij2();
+    },
     mounted() {
         this.fetchCsrfToken();
     },
@@ -223,7 +248,7 @@ export default {
                     this.poruka = response.data.poruka;
                     this.successKolegij = true;
                     this.kolegiji.push(this.course);
-                    this.getKolegij();
+                    this.getKolegij2();
                 })
                 .catch((error) => {
                     if (error.response && error.response.status === 422) {
@@ -234,8 +259,57 @@ export default {
                     }
                 });
         },
+        getKolegij2() {
+            axios
+                .get("/getKolegij")
+                .then((response) => {
+                    this.kolegiji = response.data.map((kolegij) => ({
+                        ...kolegij,
+                        created_at: new Date(
+                            kolegij.created_at
+                        ).toLocaleDateString("hr-HR", {
+                            day: "numeric",
+                            month: "long",
+                            year: "numeric",
+                        }),
+                    }));
 
+                    console.log(this.brojKolegija);
+                    console.log(response.data);
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        },
 
+        videoChange(event) {
+            this.lesson.video = event.target.files[0];
+        },
+
+        dodajVideo() {
+
+            let lesson = new FormData();
+            lesson.append("naslov",this.lesson.naslov);
+            lesson.append("opis",this.lesson.opis);
+            lesson.append("video",this.lesson.video);
+            lesson.append("course_id",this.lesson.course_id);
+           /*  const Video = {
+                naziv: this.lesson.naziv,
+                opis: this.lesson.opis,
+                video: this.lesson.video,
+                course_id: this.lesson.course_id,
+            }; */
+            axios.defaults.headers.common["X-CSRF-TOKEN"] = this.csrfToken;
+
+            axios
+                .post("/dodajVideo", lesson)
+                .then((response) => {
+                    this.poruka = response.data.poruka;
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        },
     },
 };
 </script>

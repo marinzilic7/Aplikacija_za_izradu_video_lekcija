@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CourseController;
+use App\Http\Controllers\LessonController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -17,6 +18,13 @@ Route::post('/dodajKolegij',[CourseController::class,'dodajKolegij']);
 Route::get('/getKolegij',[CourseController::class,'getKolegij']);
 Route::post('/deleteKolegij/{id}',[CourseController::class,'deleteKolegij']);
 Route::get('/getNumberKolegij',[CourseController::class,'getNumberKolegij']);
+
+
+/* Video */
+
+
+Route::post('/dodajVideo',[LessonController::class,'dodajVideo']);
+
 
 Route::get('/{any}', function () {
     return view('welcome');
