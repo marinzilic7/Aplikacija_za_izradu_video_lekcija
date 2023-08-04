@@ -177,14 +177,7 @@
         </div>
     </div>
 
-    <ul class="list-group col-lg-1 ms-3">
-        <li class="list-group-item bg-primary text-light">Lista kolegija</li>
-        <ul class="list-group">
-            <li class="list-group-item" v-for="kolegij in kolegiji">
-                {{ kolegij.naziv }}
-            </li>
-        </ul>
-    </ul>
+
 </template>
 
 <script>
@@ -199,12 +192,10 @@ export default {
             POST: "",
             csrfToken: "",
             successKolegij: false,
-            kolegiji: [],
+
         };
     },
-    created() {
-        this.getKolegij();
-    },
+
     mounted() {
         this.fetchCsrfToken();
     },
@@ -244,26 +235,7 @@ export default {
                 });
         },
 
-        getKolegij() {
-            axios
-                .get("/getKolegij")
-                .then((response) => {
-                    this.kolegiji = response.data.map((kolegij) => ({
-                        ...kolegij,
-                        created_at: new Date(
-                            kolegij.created_at
-                        ).toLocaleDateString("hr-HR", {
-                            day: "numeric",
-                            month: "long",
-                            year: "numeric",
-                        }),
-                    }));
-                    console.log(response.data);
-                })
-                .catch((error) => {
-                    console.log(error);
-                });
-        },
+
     },
 };
 </script>

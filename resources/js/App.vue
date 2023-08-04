@@ -24,6 +24,9 @@ import { RouterLink, RouterView } from "vue-router";
                     <li class="nav-item">
                         <li><RouterLink class="text-decoration-none text-dark" to="/">Home</RouterLink></li>
                     </li>
+                    <li class="nav-item">
+                        <li><RouterLink class="text-decoration-none text-dark ms-3" to="/kolegij">Kolegiji</RouterLink></li>
+                    </li>
                 </ul>
                 <ul class="navbar-nav "  v-if="!isLoggedIn">
                     <li class="nav-item">

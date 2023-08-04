@@ -15,6 +15,8 @@ Route::post('/logoutUser',[UserController::class,'logoutUser']);
 
 Route::post('/dodajKolegij',[CourseController::class,'dodajKolegij']);
 Route::get('/getKolegij',[CourseController::class,'getKolegij']);
+Route::post('/deleteKolegij/{id}',[CourseController::class,'deleteKolegij']);
+Route::get('/getNumberKolegij',[CourseController::class,'getNumberKolegij']);
 
 Route::get('/{any}', function () {
     return view('welcome');

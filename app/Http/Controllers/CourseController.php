@@ -7,7 +7,8 @@ use Illuminate\Http\Request;
 
 class CourseController extends Controller
 {
-    public function dodajKolegij(Request $request){
+    public function dodajKolegij(Request $request)
+    {
 
         $data = $request->validate([
             'naziv' => '',
@@ -15,15 +16,34 @@ class CourseController extends Controller
         ]);
 
         $kolegij = new Course();
-        $kolegij -> create($data);
+        $kolegij->create($data);
         return response()->json(['poruka' => 'Kolegij dodan!']);
     }
 
-    public function getKolegij(){
+    public function getKolegij()
+    {
 
         $kolegij = Course::get();
 
 
+
+
         return response()->json($kolegij);
+    }
+
+    public function deleteKolegij($id)
+    {
+
+        $kolegij = Course::findorFail($id);
+        $kolegij->delete();
+        return response()->json(['poruka' => 'Uspjeno izbrisan kolegij']);
+    }
+
+    public function getNumberKolegij()
+    {
+
+        $brojKolegija = Course::count();
+
+        return response()->json($brojKolegija);
     }
 }
