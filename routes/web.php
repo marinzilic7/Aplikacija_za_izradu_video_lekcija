@@ -26,6 +26,7 @@ Route::get('/getNumberKolegij',[CourseController::class,'getNumberKolegij']);
 Route::post('/dodajVideo',[LessonController::class,'dodajVideo']);
 Route::get('/getLekcije',[LessonController::class,'getLekcije']);
 Route::post('/deleteLesson/{id}',[LessonController::class,'deleteLesson']);
+Route::post('/updateLesson/{id}',[LessonController::class,'updateLesson']);
 
 /* Korisnik */
 

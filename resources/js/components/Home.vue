@@ -231,11 +231,15 @@
                     Your browser does not support the video tag.
                 </video>
                 <div class="card-body">
-                    <p class="card-title"><strong>Naslov</strong> - {{ lekcija.naslov }}</p>
-                    <p class="card-text">
-                       <strong>Opis</strong> - {{ lekcija.opis }}
+                    <p class="card-title">
+                        <strong>Naslov</strong> - {{ lekcija.naslov }}
                     </p>
-                    <p class="card-text"><strong>Predmet</strong> - {{ lekcija.category.naziv }}</p>
+                    <p class="card-text">
+                        <strong>Opis</strong> - {{ lekcija.opis }}
+                    </p>
+                    <p class="card-text">
+                        <strong>Predmet</strong> - {{ lekcija.category.naziv }}
+                    </p>
                     <p class="card-text">
                         <small class="text-muted"
                             >Objavio korisnik - {{ lekcija.user.ime }}</small
@@ -251,10 +255,99 @@
                     >
                         <button
                             v-if="korisnik.id === lekcija.user.id"
+                            type="button"
                             class="btn btn-sm btn-info me-2"
+                            data-bs-toggle="modal"
+                            :data-bs-target="'#exampleModal' + lekcija.id"
+                            data-bs-whatever="@mdo"
+                            @click="openUpdateLesson(lekcija)"
                         >
                             Uredi
                         </button>
+                        <div
+                            class="modal fade"
+                            :id="'exampleModal' + lekcija.id"
+                            tabindex="-1"
+                            :aria-labelledby="'exampleModalLabel' + lekcija.id"
+                            aria-hidden="true"
+                        >
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5
+                                            class="modal-title"
+                                            :id="'#exampleModal' + lekcija.id"
+                                        >
+                                            Uredi video lekciju
+                                        </h5>
+                                        <button
+                                            type="button"
+                                            class="btn-close"
+                                            data-bs-dismiss="modal"
+                                            aria-label="Close"
+                                        ></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form
+                                            @submit.prevent="
+                                                updateLesson(lekcija.id)
+                                            "
+                                            method="POST"
+                                        >
+                                            <input
+                                                type="hidden"
+                                                v-model="this.POST"
+                                            />
+                                            <input
+                                                type="hidden"
+                                                name=""
+                                                v-model="this.csrfToken"
+                                            />
+                                            <div class="mb-3">
+                                                <label
+                                                    for="recipient-name"
+                                                    class="col-form-label"
+                                                    >Naslov:</label
+                                                >
+                                                <input
+                                                    type="text"
+                                                    class="form-control"
+                                                    id="recipient-name"
+                                                    v-model="lesson.naslov"
+                                                />
+                                            </div>
+                                            <div class="mb-3">
+                                                <label
+                                                    for="message-text"
+                                                    class="col-form-label"
+                                                    >Opis:</label
+                                                >
+                                                <textarea
+                                                    class="form-control"
+                                                    id="message-text"
+                                                    v-model="lesson.opis"
+                                                ></textarea>
+                                            </div>
+                                            <button
+                                                type="submit"
+                                                class="btn btn-primary w-100"
+                                            >
+                                                Uredi video lekciju
+                                            </button>
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button
+                                            type="button"
+                                            class="btn btn-secondary w-100"
+                                            data-bs-dismiss="modal"
+                                        >
+                                            Zatvori
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <button
                             v-if="korisnik.id === lekcija.user.id"
                             class="btn btn-sm btn-danger"
@@ -262,7 +355,11 @@
                         >
                             Izbrisi
                         </button>
-                        <p v-else class="alert alert-info w-100">Ne mozete <strong>brisati</strong> ni <strong>uređivati</strong> video lekciju drugog korisnika! </p>
+                        <p v-else class="alert alert-info w-100">
+                            Ne mozete <strong>brisati</strong> ni
+                            <strong>uređivati</strong> video lekciju drugog
+                            korisnika!
+                        </p>
                     </div>
                 </div>
             </div>
@@ -293,6 +390,7 @@ export default {
             lekcije: [],
             errors: {},
             korisnik: [],
+            currentlekcijaId: null,
         };
     },
     created() {
@@ -429,6 +527,37 @@ export default {
                 .catch((error) => {
                     console.log(error);
                 });
+        },
+
+        openUpdateLesson(lekcija) {
+            this.currentlekcijaId = lekcija.id;
+            this.lesson.naslov = lekcija.naslov;
+            this.lesson.opis = lekcija.opis;
+            $("#exampleModal" + lekcija.id).modal("show");
+        },
+
+        updateLesson(id) {
+            axios.defaults.headers.common["X-CSRF-TOKEN"] = this.csrfToken;
+            axios
+                .post(`/updateLesson/${id}`, {
+                    naslov: this.lesson.naslov,
+                    opis: this.lesson.opis,
+                })
+                .then((response) => {
+                    this.poruka = response.data.poruka;
+
+                    const updatedLesson = response.data.lekcija
+                    const index = this.lekcije.findIndex(
+                        (lekcija) => lekcija.id === this.currentlekcijaId
+                    );
+                    if (index !== -1) {
+                        /* this.courses.splice(index, 1, updatedCourse); */
+                        this.lekcije[index].naslov = updatedLesson.naslov;
+                        this.lekcije[index].opis = updatedLesson.opis;
+
+                    }
+                });
+                $("#exampleModal" + this.currentlekcijaId).modal("hide");
         },
     },
 };

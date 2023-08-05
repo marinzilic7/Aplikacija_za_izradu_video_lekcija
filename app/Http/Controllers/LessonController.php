@@ -53,4 +53,22 @@ class LessonController extends Controller
         $lesson->delete();
         return response()->json(['poruka' => 'Uspjeno izbrisan kolegij']);
     }
+
+    public function updateLesson(Request $request, $id){
+
+        $lekcija = Lesson::findOrFail($id);
+        $data = $request->validate([
+            'naslov' => 'required|string',
+            'opis' => 'required|string',
+
+        ]);
+
+        $lekcija->naslov=$data['naslov'];
+        $lekcija->opis=$data['opis'];
+        $lekcija->save();
+        return response()->json([
+            'poruka' => 'Anketa uspjesno uređena',
+            'lekcija' => $lekcija,
+        ]);
+    }
 }
