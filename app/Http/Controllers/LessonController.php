@@ -37,7 +37,7 @@ class LessonController extends Controller
 
         DB::table('lessons')->insert($data);
 
-        return response()->json(['video' => 'Video lekcija uspješno dodana!']);
+        return response()->json(['poruka' => 'Video lekcija uspješno dodana!']);
     }
 
     public function getLekcije()
@@ -51,7 +51,7 @@ class LessonController extends Controller
     {
         $lesson = Lesson::findorFail($id);
         $lesson->delete();
-        return response()->json(['poruka' => 'Uspjeno izbrisan kolegij']);
+        return response()->json(['poruka' => 'Uspjesno izbrisana video lekcija']);
     }
 
     public function updateLesson(Request $request, $id){

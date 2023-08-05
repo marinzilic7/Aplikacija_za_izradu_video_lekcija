@@ -1,34 +1,51 @@
 <template>
+    <div
+        v-if="failedDeleteMessage"
+        class="alert alert-danger position-fixed end-0 me-3  greska"
+        id="noti-alert"
+    >
+        Brisanje neuspjesno. Izbrisite sve video lekcije koje su pod ovim
+        kolegijom.
+    </div>
+    <div
+        v-if="successDelete"
+        class="alert alert-success position-fixed end-0 me-3 greska"
+        id="successDelete-alert"
+    >
+        {{ poruka }}
+    </div>
     <div v-if="imaKolegij">
         <h1 class="text-center mt-5">Trenutno nema kolegija.</h1>
     </div>
     <div v-else class="container">
         <div class="row">
-            <table class="table shadow-lg mt-5">
-                <thead>
-                    <tr>
-                        <th scope="col">ID KOLEGIJA</th>
-                        <th scope="col">Naziv</th>
-                        <th scope="col">Napravljen</th>
-                        <th scope="col">Akcije</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="kolegij in kolegiji">
-                        <th scope="row">{{ kolegij.id }}</th>
-                        <td>{{ kolegij.naziv }}</td>
-                        <td>{{ kolegij.created_at }}</td>
-                        <td>
-                            <button
-                                @click="izbrisiKolegij(kolegij.id)"
-                                class="btn btn-sm bg-danger text-light"
-                            >
-                                Izbrisi
-                            </button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="col-12">
+                <table class="table shadow-lg mt-5">
+                    <thead>
+                        <tr>
+                            <th scope="col">ID KOLEGIJA</th>
+                            <th scope="col">Naziv</th>
+                            <th scope="col">Napravljen</th>
+                            <th scope="col">Akcije</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="kolegij in kolegiji">
+                            <th scope="row">{{ kolegij.id }}</th>
+                            <td>{{ kolegij.naziv }}</td>
+                            <td>{{ kolegij.created_at }}</td>
+                            <td>
+                                <button
+                                    @click="izbrisiKolegij(kolegij.id)"
+                                    class="btn btn-sm bg-danger text-light"
+                                >
+                                    Izbrisi
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </template>
@@ -40,6 +57,8 @@ export default {
             kolegiji: [],
             brojKolegija: null,
             imaKolegij: false,
+            failedDeleteMessage: false,
+            successDelete: false,
         };
     },
     created() {
@@ -47,8 +66,8 @@ export default {
         this.getNumberKolegij();
     },
     methods: {
-         getKolegij() {
-             axios
+        getKolegij() {
+            axios
                 .get("/getKolegij")
                 .then((response) => {
                     this.kolegiji = response.data.map((kolegij) => ({
@@ -75,21 +94,33 @@ export default {
                 .post(`/deleteKolegij/${id} `)
                 .then((response) => {
                     this.poruka = response.data.poruka;
-                    this.izbirsano = true;
-                    setTimeout(() => {
-                        this.izbrisano = false;
-                    }, 3000);
+                    this.successDelete = true;
+                    $(document).ready(function () {
+                        $("#successDelete-alert")
+                            .fadeTo(3000, 500)
+                            .slideUp(500, function () {
+                                $("#successDelete-alert").slideUp(500);
+                            });
+                    });
                     this.kolegiji = this.kolegiji.filter(
                         (kolegijaa) => kolegijaa.id !== id
                     );
                     this.getNumberKolegij();
                 })
                 .catch((error) => {
+                    this.failedDeleteMessage = true;
+                    $(document).ready(function () {
+                        $("#noti-alert")
+                            .fadeTo(3000, 500)
+                            .slideUp(500, function () {
+                                $("#noti-alert").slideUp(500);
+                            });
+                    });
                     console.log(error);
                 });
         },
-         getNumberKolegij() {
-             axios
+        getNumberKolegij() {
+            axios
                 .get("/getNumberKolegij")
                 .then((response) => {
                     this.brojKolegija = response.data;
@@ -108,4 +139,8 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style scoped>
+.greska {
+    width: auto;
+}
+</style>

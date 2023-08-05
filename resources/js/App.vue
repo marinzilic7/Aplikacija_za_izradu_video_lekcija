@@ -20,15 +20,16 @@ import { RouterLink, RouterView } from "vue-router";
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 ">
                     <li class="nav-item">
                         <li><RouterLink class="text-decoration-none text-dark" to="/">Home</RouterLink></li>
                     </li>
+
                     <li class="nav-item">
-                        <li><RouterLink class="text-decoration-none text-dark ms-3" to="/kolegij">Kolegiji</RouterLink></li>
+                        <li><RouterLink class="text-decoration-none text-dark mx-lg-3 " to="/kolegij">Kolegiji</RouterLink></li>
                     </li>
                 </ul>
-                <ul class="navbar-nav "  v-if="!isLoggedIn">
+                <ul class="navbar-nav  d-flex justify-content-center align-items-center "  v-if="!isLoggedIn">
                     <li class="nav-item">
                         <RouterLink class="pe-3 text-decoration-none text-dark" to="/login">Prijava</RouterLink>
                     </li>
@@ -36,11 +37,11 @@ import { RouterLink, RouterView } from "vue-router";
                         <RouterLink class="text-decoration-none text-dark" to="/register">Registracija</RouterLink>
                     </li>
                 </ul>
-                <ul v-else class="navbar-nav">
-                    <li >
-                            <div class="dropdown">
+                <ul v-else class="navbar-nav ">
+                    <li>
+                            <div class="btn-group dropstart">
                                 <button
-                                    class="btn dropdown-toggle"
+                                    class="btn btn-light dropdown-toggle text-dark nav-link"
                                     type="button"
                                     data-bs-toggle="dropdown"
                                     aria-expanded="false"
@@ -51,7 +52,7 @@ import { RouterLink, RouterView } from "vue-router";
                                     <li>
                                         <button
                                             @click="logOut"
-                                            class="dropdown-item"
+                                            class="dropdown-item p-0 text-center"
                                             type="button"
                                         >
                                             Logout

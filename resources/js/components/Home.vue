@@ -1,5 +1,12 @@
 <template>
-    <!-- <div v-if="user in korisnik" :key="user.id">{{ user.ime }}</div> -->
+
+    <div
+        v-if="noti"
+        class="alert position-fixed end-0 col-lg-1 me-3 text-center text-light z-1 shadow-lg noTI"
+        id="noti-alert"
+    >
+        {{ poruka }}
+    </div>
 
     <div class="container">
         <div class="row">
@@ -73,12 +80,6 @@
                                 >
                                     Dodaj kolegij
                                 </button>
-                                <p
-                                    v-if="successKolegij"
-                                    class="alert alert-success mt-3"
-                                >
-                                    Kolegij dodan!
-                                </p>
                             </form>
                         </div>
                     </div>
@@ -256,7 +257,7 @@
                         <button
                             v-if="korisnik.id === lekcija.user.id"
                             type="button"
-                            class="btn btn-sm btn-info me-2"
+                            class="btn btn-sm btn-primary  me-2"
                             data-bs-toggle="modal"
                             :data-bs-target="'#exampleModal' + lekcija.id"
                             data-bs-whatever="@mdo"
@@ -391,6 +392,8 @@ export default {
             errors: {},
             korisnik: [],
             currentlekcijaId: null,
+            noti: false,
+            poruka: "",
         };
     },
     created() {
@@ -423,8 +426,16 @@ export default {
                 .post("/dodajKolegij", Kolegij)
                 .then((response) => {
                     this.poruka = response.data.poruka;
-                    this.successKolegij = true;
+                    this.noti = true;
+                    $(document).ready(function () {
+                        $("#noti-alert")
+                            .fadeTo(2000, 500)
+                            .slideUp(500, function () {
+                                $("#noti-alert").slideUp(500);
+                            });
+                    });
                     this.kolegiji.push(this.course);
+                    $("#flush-collapseOne").collapse("hide");
                     this.getKolegij2();
                 })
                 .catch((error) => {
@@ -475,12 +486,23 @@ export default {
             axios
                 .post("/dodajVideo", lessonFormData)
                 .then((response) => {
-                    this.video = response.data.video;
+                    this.poruka = response.data.poruka;
+                    this.noti = true;
+                    $(document).ready(function () {
+                        $("#noti-alert")
+                            .fadeTo(2000, 500)
+                            .slideUp(500, function () {
+                                $("#noti-alert").slideUp(500);
+                            });
+                    });
                     $("#flush-collapseTwo").collapse("hide");
-                    if (this.video) {
-                        alert("Video uspjesno dodan");
-                    }
-                    this.getLekcije();
+                    (this.lesson = {
+                        naslov: "",
+                        opis: "",
+                        video: null,
+                        course_id: "",
+                    }),
+                        this.getLekcije();
                 })
                 .catch((error) => {
                     console.log(error);
@@ -520,6 +542,14 @@ export default {
                 .post(`/deleteLesson/${id} `)
                 .then((response) => {
                     this.poruka = response.data.poruka;
+                    this.noti = true;
+                    $(document).ready(function () {
+                        $("#noti-alert")
+                            .fadeTo(2000, 500)
+                            .slideUp(500, function () {
+                                $("#noti-alert").slideUp(500);
+                            });
+                    });
                     this.lekcije = this.lekcije.filter(
                         (lessonn) => lessonn.id !== id
                     );
@@ -545,8 +575,15 @@ export default {
                 })
                 .then((response) => {
                     this.poruka = response.data.poruka;
-
-                    const updatedLesson = response.data.lekcija
+                    this.noti = true;
+                    $(document).ready(function () {
+                        $("#noti-alert")
+                            .fadeTo(2000, 500)
+                            .slideUp(500, function () {
+                                $("#noti-alert").slideUp(500);
+                            });
+                    });
+                    const updatedLesson = response.data.lekcija;
                     const index = this.lekcije.findIndex(
                         (lekcija) => lekcija.id === this.currentlekcijaId
                     );
@@ -554,13 +591,17 @@ export default {
                         /* this.courses.splice(index, 1, updatedCourse); */
                         this.lekcije[index].naslov = updatedLesson.naslov;
                         this.lekcije[index].opis = updatedLesson.opis;
-
                     }
                 });
-                $("#exampleModal" + this.currentlekcijaId).modal("hide");
+            $("#exampleModal" + this.currentlekcijaId).modal("hide");
         },
     },
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style scoped>
+.noTI {
+    background-color: #269389;
+    width: auto;
+}
+</style>
