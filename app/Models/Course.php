@@ -8,7 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 class Course extends Model
 {
     protected $fillable = [
-        'naziv','opis'
+        'naziv', 'opis'
     ];
+
+    public function lessons()
+    {
+        return $this->hasMany(Lesson::class);
+    }
     use HasFactory;
 }

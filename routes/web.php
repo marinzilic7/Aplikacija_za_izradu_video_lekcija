@@ -25,6 +25,11 @@ Route::get('/getNumberKolegij',[CourseController::class,'getNumberKolegij']);
 
 Route::post('/dodajVideo',[LessonController::class,'dodajVideo']);
 Route::get('/getLekcije',[LessonController::class,'getLekcije']);
+Route::post('/deleteLesson/{id}',[LessonController::class,'deleteLesson']);
+
+/* Korisnik */
+
+Route::get('/getUser',[UserController::class,'getUser']);
 
 
 Route::get('/{any}', function () {

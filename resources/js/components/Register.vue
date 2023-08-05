@@ -128,9 +128,21 @@
                         ></span
                     >
                 </div>
-                <p v-if="failedReg" class="alert alert-warning mt-3">
-                    Postoji korisnik s tim mailom
-                </p>
+
+                <div
+                    v-if="failedReg"
+                    class="alert alert-warning alert-dismissible fade show mt-3"
+                    role="alert"
+                    data-tor="show:[rotateX.from(90deg) @--tor-translateZ(-5rem; 0rem) pull.down(full)] slow"
+                >
+                    Postoji korisnik s tim <strong>emailom</strong>
+                    <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="alert"
+                        aria-label="Close"
+                    ></button>
+                </div>
             </form>
         </div>
     </div>
@@ -221,7 +233,6 @@ export default {
                 axios
                     .post("/registerUser", Data)
                     .then((response) => {
-
                         this.poruka = response.data.poruka;
                         this.successReg = true;
                     })

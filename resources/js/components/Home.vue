@@ -1,4 +1,6 @@
 <template>
+    <!-- <div v-if="user in korisnik" :key="user.id">{{ user.ime }}</div> -->
+
     <div class="container">
         <div class="row">
             <div class="accordion accordion-flush" id="accordionFlushExample">
@@ -97,7 +99,6 @@
                     <div
                         id="flush-collapseTwo"
                         class="accordion-collapse collapse"
-
                         data-bs-parent="#accordionFlushExample"
                     >
                         <div
@@ -221,26 +222,48 @@
         <div
             class="d-flex flex-column align-items-center justify-content-center"
         >
-            <div class="card mt-5 col-lg-8" v-for="lekcija in lekcije">
+            <div
+                class="card mt-5 col-lg-8 shadow-lg"
+                v-for="lekcija in lekcije"
+            >
                 <video class="card-img-top" controls>
                     <source :src="'/videos/' + lekcija.video" />
                     Your browser does not support the video tag.
                 </video>
                 <div class="card-body">
-                    <h5 class="card-title">{{ lekcija.naslov }}</h5>
+                    <p class="card-title"><strong>Naslov</strong> - {{ lekcija.naslov }}</p>
                     <p class="card-text">
-                        {{ lekcija.opis }}
+                       <strong>Opis</strong> - {{ lekcija.opis }}
                     </p>
+                    <p class="card-text"><strong>Predmet</strong> - {{ lekcija.category.naziv }}</p>
                     <p class="card-text">
                         <small class="text-muted"
                             >Objavio korisnik - {{ lekcija.user.ime }}</small
                         >
                     </p>
                     <p class="card-text">
-                        <small class="text-muted"
-                            > {{ lekcija.created_at }} </small
-                        >
+                        <small class="text-muted">
+                            {{ lekcija.created_at }}
+                        </small>
                     </p>
+                    <div
+                        class="d-flex flex-row justify-content-end align-items-end"
+                    >
+                        <button
+                            v-if="korisnik.id === lekcija.user.id"
+                            class="btn btn-sm btn-info me-2"
+                        >
+                            Uredi
+                        </button>
+                        <button
+                            v-if="korisnik.id === lekcija.user.id"
+                            class="btn btn-sm btn-danger"
+                            @click="deleteLesson(lekcija.id)"
+                        >
+                            Izbrisi
+                        </button>
+                        <p v-else class="alert alert-info w-100">Ne mozete <strong>brisati</strong> ni <strong>uređivati</strong> video lekciju drugog korisnika! </p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -269,12 +292,13 @@ export default {
             },
             lekcije: [],
             errors: {},
-
+            korisnik: [],
         };
     },
     created() {
         this.getKolegij2();
         this.getLekcije();
+        this.getUser();
     },
     mounted() {
         this.fetchCsrfToken();
@@ -342,14 +366,11 @@ export default {
         },
 
         dodajVideo() {
-
-
             let lessonFormData = new FormData();
             lessonFormData.append("naslov", this.lesson.naslov);
             lessonFormData.append("opis", this.lesson.opis);
             lessonFormData.append("video", this.lesson.video);
             lessonFormData.append("course_id", this.lesson.course_id);
-
 
             axios.defaults.headers.common["X-CSRF-TOKEN"] = this.csrfToken;
 
@@ -358,11 +379,10 @@ export default {
                 .then((response) => {
                     this.video = response.data.video;
                     $("#flush-collapseTwo").collapse("hide");
-                    if(this.video){
-                        alert('Video uspjesno dodan')
+                    if (this.video) {
+                        alert("Video uspjesno dodan");
                     }
                     this.getLekcije();
-
                 })
                 .catch((error) => {
                     console.log(error);
@@ -383,6 +403,28 @@ export default {
                             year: "numeric",
                         }),
                     }));
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        },
+
+        getUser() {
+            axios.get("/getUser").then((response) => {
+                this.korisnik = response.data;
+                console.log(this.korisnik);
+            });
+        },
+
+        deleteLesson(id) {
+            axios.defaults.headers.common["X-CSRF-TOKEN"] = this.csrfToken;
+            axios
+                .post(`/deleteLesson/${id} `)
+                .then((response) => {
+                    this.poruka = response.data.poruka;
+                    this.lekcije = this.lekcije.filter(
+                        (lessonn) => lessonn.id !== id
+                    );
                 })
                 .catch((error) => {
                     console.log(error);

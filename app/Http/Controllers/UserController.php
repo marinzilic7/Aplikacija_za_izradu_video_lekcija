@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Symfony\Component\CssSelector\Node\FunctionNode;
 
 class UserController extends Controller
 {
@@ -73,5 +74,10 @@ class UserController extends Controller
     {
         Auth::logout();
         return response()->json(['redirect' => '/login']);
+    }
+
+    public function getUser(){
+        $user = Auth::user();
+        return response()->json($user);
     }
 }

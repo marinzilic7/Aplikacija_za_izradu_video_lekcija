@@ -42,8 +42,15 @@ class LessonController extends Controller
 
     public function getLekcije()
     {
-        $lekcije = Lesson::with('user')->get();
+        $lekcije = Lesson::with('user','category')->get();
 
         return response()->json($lekcije);
+    }
+
+    public function deleteLesson($id)
+    {
+        $lesson = Lesson::findorFail($id);
+        $lesson->delete();
+        return response()->json(['poruka' => 'Uspjeno izbrisan kolegij']);
     }
 }
