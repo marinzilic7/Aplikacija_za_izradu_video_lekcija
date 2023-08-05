@@ -17,7 +17,9 @@
     <div v-if="imaKolegij">
         <h1 class="text-center mt-5">Trenutno nema kolegija.</h1>
     </div>
-    <div v-else class="container">
+    <div v-if="!imaKolegij">
+        <div  class="container" v-if="isLoggedIn">
+
         <div class="row">
             <div class="col-12">
                 <table class="table shadow-lg mt-5">
@@ -48,9 +50,21 @@
             </div>
         </div>
     </div>
+
+    <div class="container d-flex justify-content-center " v-else>
+        <div  class="alert alert-warning text-center col-lg-7 mt-5 regiNoti">
+            Kako bi upravljali aplikacijom molimo da se registrirate ili prijavite
+        </div>
+    </div>
+</div>
+
+
 </template>
 
 <script>
+import { mapState } from "vuex";
+import axios from "axios";
+import { mapGetters } from "vuex";
 export default {
     data() {
         return {
@@ -60,6 +74,13 @@ export default {
             failedDeleteMessage: false,
             successDelete: false,
         };
+    },
+    computed: {
+        ...mapState(["loginMessage"]),
+        ...mapGetters(["loggedInUser"]),
+        isLoggedIn() {
+            return this.loggedInUser !== null;
+        },
     },
     created() {
         this.getKolegij();

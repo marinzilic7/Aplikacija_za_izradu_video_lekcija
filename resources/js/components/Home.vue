@@ -8,7 +8,7 @@
         {{ poruka }}
     </div>
 
-    <div class="container">
+    <div class="container" v-if="isLoggedIn">
         <div class="row">
             <div class="accordion accordion-flush" id="accordionFlushExample">
                 <div class="accordion-item">
@@ -366,10 +366,17 @@
             </div>
         </div>
     </div>
+    <div class="container d-flex justify-content-center" v-else>
+        <div class="alert alert-warning text-center col-lg-7 mt-5 regiNoti">
+            Kako bi upravljali aplikacijom molimo da se registrirate ili prijavite
+        </div>
+    </div>
 </template>
 
 <script>
+import { mapState } from "vuex";
 import axios from "axios";
+import { mapGetters } from "vuex";
 export default {
     data() {
         return {
@@ -395,6 +402,13 @@ export default {
             noti: false,
             poruka: "",
         };
+    },
+     computed: {
+        ...mapState(["loginMessage"]),
+        ...mapGetters(["loggedInUser"]),
+        isLoggedIn() {
+            return this.loggedInUser !== null;
+        },
     },
     created() {
         this.getKolegij2();
