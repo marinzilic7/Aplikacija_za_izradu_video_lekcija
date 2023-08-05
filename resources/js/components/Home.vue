@@ -18,7 +18,7 @@
                     <div
                         id="flush-collapseOne"
                         class="accordion-collapse collapse"
-                        data-bs-parent="#accordionFlushExample"
+                        data-bs-parent="#accordionFlushExamplee"
                     >
                         <div
                             class="accordion-body d-flex flex-column align-items-center"
@@ -97,6 +97,7 @@
                     <div
                         id="flush-collapseTwo"
                         class="accordion-collapse collapse"
+
                         data-bs-parent="#accordionFlushExample"
                     >
                         <div
@@ -232,7 +233,7 @@
                     </p>
                     <p class="card-text">
                         <small class="text-muted"
-                            >Last updated 3 mins ago</small
+                            >{{ lekcija.created_at }}</small
                         >
                     </p>
                 </div>
@@ -263,6 +264,7 @@ export default {
             },
             lekcije: [],
             errors: {},
+
         };
     },
     created() {
@@ -335,26 +337,27 @@ export default {
         },
 
         dodajVideo() {
+
+
             let lessonFormData = new FormData();
             lessonFormData.append("naslov", this.lesson.naslov);
             lessonFormData.append("opis", this.lesson.opis);
             lessonFormData.append("video", this.lesson.video);
             lessonFormData.append("course_id", this.lesson.course_id);
-            /*  const Video = {
-                naziv: this.lesson.naziv,
-                opis: this.lesson.opis,
-                video: this.lesson.video,
-                course_id: this.lesson.course_id,
-            }; */
+
 
             axios.defaults.headers.common["X-CSRF-TOKEN"] = this.csrfToken;
 
             axios
                 .post("/dodajVideo", lessonFormData)
                 .then((response) => {
-                    this.poruka = response.data.poruka;
-
+                    this.video = response.data.video;
+                    $("#flush-collapseTwo").collapse("hide");
+                    if(this.video){
+                        alert('Video uspjesno dodan')
+                    }
                     this.getLekcije();
+
                 })
                 .catch((error) => {
                     console.log(error);
@@ -365,7 +368,16 @@ export default {
             axios
                 .get("/getLekcije")
                 .then((response) => {
-                    this.lekcije = response.data;
+                    this.lekcije = response.data.map((lekcija) => ({
+                        ...lekcija,
+                        created_at: new Date(
+                            lekcija.created_at
+                        ).toLocaleDateString("hr-HR", {
+                            day: "numeric",
+                            month: "long",
+                            year: "numeric",
+                        }),
+                    }));
                 })
                 .catch((error) => {
                     console.log(error);

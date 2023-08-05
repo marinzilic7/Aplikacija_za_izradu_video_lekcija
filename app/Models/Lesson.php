@@ -10,6 +10,6 @@ class Lesson extends Model
     protected $fillable = [
         'naslov', 'opis', 'video', 'user_id','course_id'
     ];
-
+    public $timestamps = true;
     use HasFactory;
 }
