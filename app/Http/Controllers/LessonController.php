@@ -42,7 +42,8 @@ class LessonController extends Controller
 
     public function getLekcije()
     {
-        $lekcije = Lesson::get();
+        $lekcije = Lesson::with('user')->get();
+
         return response()->json($lekcije);
     }
 }

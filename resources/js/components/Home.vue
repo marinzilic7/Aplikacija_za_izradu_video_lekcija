@@ -233,7 +233,12 @@
                     </p>
                     <p class="card-text">
                         <small class="text-muted"
-                            >{{ lekcija.created_at }}</small
+                            >Objavio korisnik - {{ lekcija.user.ime }}</small
+                        >
+                    </p>
+                    <p class="card-text">
+                        <small class="text-muted"
+                            > {{ lekcija.created_at }} </small
                         >
                     </p>
                 </div>
