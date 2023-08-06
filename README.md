@@ -1,6 +1,6 @@
 # Projekt iz kolegija Projektiranje sustava e-učenja
 
-# Aplikacija za izradu video lekcija
+# Aplikacija za izradu online video lekcija
 
 **Tehnologije**
 
